@@ -1,4 +1,4 @@
-#bpf-mini
+# bpf-mini
 
 bpf-mini is a project I used to featured how to compile an ebpf project.
 The community give the [libbpf-boostrap](https://github.com/libbpf/libbpf-bootstrap) as example.
@@ -17,7 +17,8 @@ cc -g -Wall -I.output -I../libbpf/include/uapi -I../vmlinux/x86/ -c minimal.c -o
 cc -g -Wall .output/minimal.o /home/vagrant/repo/bpf-mini/examples/.output/libbpf.a   -lrt -ldl -lpthread -lm -lelf -lz -o minimal
 ```
 1. Generate a BPF ELF object(minimal.tmp.bpf.o) from minimal.bpf.c.
-2. Generate a BPF ELF object(minimal.bpf.o) by `bpftool gen object` .
+2. Generate a BPF ELF object(minimal.bpf.o) by `bpftool gen object`. In fact we don't need this step in this case, since we only have one ELF object.
+But notice that if we generate skeleton C header from minimal.tmp.bpf.o, the function names will be changed from `minimal_bpf_xxx` into `minimal_tmp_bpf_xxx`.
 3. Generate a BPF skeleton C header file(minimal.skel.h) from minimal.bpf.o by `bpftool gent skeleton`. 
 4. Compile minimal.c with minimal.skel.h.
 5. Link all to generate the binary file.
