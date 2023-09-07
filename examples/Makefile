@@ -6,7 +6,7 @@ LIBBPF_OBJ := $(abspath $(OUTPUT)/libbpf.a)
 BPFTOOL_OUTPUT ?= $(abspath $(OUTPUT)/bpftool)
 BPFTOOL ?= $(BPFTOOL_OUTPUT)/bootstrap/bpftool
 
-APPS = minimal iolatency percpu
+APPS = minimal iolatency percpu override
 
 ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 			 | sed 's/arm.*/arm/' \
