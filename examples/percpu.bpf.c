@@ -31,7 +31,7 @@ int BPF_KPROBE(blk_mq_end_request, struct request * rq, blk_status_t error)
 }
 
 SEC("kprobe/scsi_end_request")
-int BPF_KPROBE(probe_scsi_end_request, struct *req, blk_status_t error,
+int BPF_KPROBE(probe_scsi_end_request, struct request *req, blk_status_t error,
 	       unsigned int bytes)
 {
   u64 *valp, init = 1;

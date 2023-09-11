@@ -21,6 +21,31 @@ static void sig_handler(int sig)
   exiting = true;
 }
 
+static void print_map(int fd)
+{
+  u32 *key = NULL, next_key;
+  u64 value;
+  int err;
+  while(1) {
+    err = bpf_map_get_next_key(fd, key, &next_key);
+    if (err) {
+      if (errno == ENOENT)
+	return;
+      fprintf(stderr, "bpf_map_get_next_key failed: %s\n", strerror(errno));
+      return;
+    }
+    
+    err = bpf_map_lookup_elem(fd, &next_key, &value);
+    if (err) {
+      fprintf(stderr, "bpf_map_lookup_elem failed: %s\n", strerror(errno));
+      return;
+    }
+    key = &next_key;
+  
+    fprintf(stdout, "%d:\t%lld\n", next_key, value);
+  }
+}
+
 int main(int argc, char** argv)
 {
   struct percpu_bpf *skel;
@@ -53,28 +78,10 @@ int main(int argc, char** argv)
   fprintf(stderr, "Succ to attach BPF skeleton\n");
 
   int fd = bpf_map__fd(skel->maps.map1);
-  u32 *key = NULL, *next_key = NULL;
-  u64 value;
   
   while(!exiting) {
-    err = bpf_map_get_next_key(fd, key, next_key);
-    if (err) {
-      if (errno == ENOENT) {
-	err = 0;
-	fprintf(stderr, "errno == ENOENT\n");
-	continue;
-      }
-      fprintf(stderr, "bpf_map_get_next_key failed: %s\n", strerror(errno));
-      return err;
-    }
-
-    err = bpf_map_lookup_elem(fd, next_key, &value);
-    if (err) {
-      fprintf(stderr, "bpf_map_lookup_elem failed: %s\n", strerror(errno));
-      return err;
-    }
-    fprintf(stdout, "%d:\t%lld\n", *next_key, value);
-    key = next_key;
+    print_map(fd);
+    fprintf(stdout, "sleep\n");
     sleep(3);
   }
 
