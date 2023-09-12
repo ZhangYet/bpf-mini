@@ -24,8 +24,9 @@ static void sig_handler(int sig)
 static void print_map(int fd)
 {
   u32 *key = NULL, next_key;
-  u64 value;
+  u64 value[2];
   int err;
+  
   while(1) {
     err = bpf_map_get_next_key(fd, key, &next_key);
     if (err) {
@@ -42,7 +43,7 @@ static void print_map(int fd)
     }
     key = &next_key;
   
-    fprintf(stdout, "%d:\t%lld\n", next_key, value);
+    fprintf(stdout, "%d:\t%lld\t%lld\n", next_key, value[0], value[1]);
   }
 }
 
