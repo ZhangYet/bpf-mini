@@ -17,8 +17,6 @@ struct megasas_event {
   __le32 code;
 };
 
-const struct megasas_event *unused __attribute__((unused));
-
 SEC("kprobe/megasas_aen_polling")
 int BPF_KPROBE(probe_megasas_aen_polling, struct work_struct *work)
 {
