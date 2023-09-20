@@ -35,8 +35,10 @@ int BPF_KPROBE(probe_megasas_aen_polling, struct work_struct *work)
   
   struct megasas_instance *instance;
   bpf_core_read(&instance, sizeof(struct megasas_instance*), &ev->instance);
-  if (!instance)
+  if (!instance) {
+    bpf_ringbuf_discard(event, 0);
     return 0;
+  }
 
   event->code = BPF_CORE_READ(instance, evt_detail, code);
   bpf_ringbuf_submit(event, 0);
